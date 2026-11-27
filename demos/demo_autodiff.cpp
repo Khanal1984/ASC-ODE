@@ -1,6 +1,7 @@
 #include <iostream>
 #include <autodiff.hpp>
-
+#include <fstream>
+#include <vector>
 
 using namespace ASC_ode;
 
@@ -44,5 +45,38 @@ int main()
     // sin(addx) needs cos for AutoDiff, which is an exercise:
     // std::cout << "sin(addx) = " << sin(addx) << std::endl;
   }
+  //Legendre polynomials implementation
+  std::vector<AutoDiff<1>> P;
+
+  std::ofstream file("legendre.txt");
+
+  file << "x";
+  for (int k = 0; k <= 5; ++k)
+    file << ",P" << k << ",dP" << k;
+  file << "\n";
+
+  // Evaluate on [-1, 1]
+  const int num_points = 200;
+
+  for (int j = 0; j <= num_points; ++j){
+    //Ranges from -1 to 1 and takes a specific stepsize to get results for 200 x_values
+    double x_value = -1.0 + 2.0 *j / num_points;
+    AutoDiff<1> x_new{Variable<0, double>(x_value)};
+    LegendrePolynomials(5,x_new, P);
+
+    file << x_value;
+
+    for (int k = 0; k <= 5; ++k)
+      {
+        file << "," << P[k].value()<< "," << P[k].deriv()[0];
+      }
+
+    file << "\n";
+  }
+
+  file.close();
+
+
+
   return 0;
-}
+};
